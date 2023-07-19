@@ -2,6 +2,7 @@ const Hangman = function(word,remainingGuesses){
     this.word = word;
     this.remainingGuesses = remainingGuesses;
     this.guessedletters = [];
+    this.status = 'Playing';
 }
 
 Hangman.prototype.getPuzzle= function (){
@@ -16,7 +17,8 @@ Hangman.prototype.getPuzzle= function (){
         puzzle += '*';
       }
     })
-    return puzzle;
+
+    document.querySelector('#puzzle-word').textContent = puzzle;
 }
 
 Hangman.prototype.guessedLetters = function (letter){
@@ -37,12 +39,36 @@ Hangman.prototype.guessedLetters = function (letter){
     }
     
 }
+
+Hangman.prototype.calculateStatus = function(){
+    if(!this.remainingGuesses){
+        this.status = 'Lost';
+    }
+    else{
+        let finished = true;
+        const wordArray = this.word.split('');
+
+        finished = wordArray.every((letter)=> this.guessedletters.includes(letter))
+        if(finished){
+            this.status = 'Won';
+        }
+        else{
+            this.status ='Playing';
+        }
+
+    }
+    return this.status;
+}
 const game1 = new Hangman('chair',2);
 const game2 = new Hangman('New Body',4);
-console.log(game1.getPuzzle());
+// onsole.log(game1.getPuzzle());
 
+game1.getPuzzle();
 window.addEventListener('keypress',(e)=>{
     const letter = (String.fromCharCode(e.charCode)).toLocaleLowerCase();
-    console.log(game1.guessedLetters(letter));
-    console.log(game1.getPuzzle());
+    const guessRespone = (game1.guessedLetters(letter));
+    document.querySelector('#guess-response').textContent = guessRespone;
+    game1.getPuzzle();
+    document.querySelector('#show-status').textContent = game1.calculateStatus();
+
 })
